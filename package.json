@@ -1,0 +1,29 @@
+{
+  "name": "football-api",
+  "version": "1.0.0",
+  "description": "作为中间件，转发第三方接口，不用于商业，仅作为娱乐",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chensidi/football-api.git"
+  },
+  "keywords": [
+    "football",
+    "api"
+  ],
+  "author": "jacky cheung",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chensidi/football-api/issues"
+  },
+  "homepage": "https://github.com/chensidi/football-api#readme",
+  "dependencies": {
+    "got": "^11.8.2",
+    "koa": "^2.13.1",
+    "koa-bodyparser": "^4.3.0",
+    "koa-router": "^10.0.0"
+  }
+}
