@@ -1,44 +1,20 @@
-const got = require('got');
 const Router = require('koa-router');
 const cheerio  = require('cheerio');
 const axios  = require('axios')
 
 const $$ = cheerio.load;
-const api = new Router();
+const person = new Router();
 
-api.get('/getHomeData', async ctx => { //首页数据
-	const { query } = ctx;
-	try {
-		const res = await got(query.url);
-		ctx.body = {
-			code: 200,
-			body: JSON.parse(res.body)
-		}
-	} catch(err) {
-		console.log(err);
-		ctx.body = {
-			code: -1,
-			body: err
-		}
-	}
-})
+const personUrl = `https://www.dongqiudi.com/player`;
 
-api.post('/postman', async ctx => {
-	console.log(5)
-	const body = ctx.request.body;
-	console.log(body);
-})
-
-api.get('/getWebData', async (ctx) => {
-	const res = await axios.get('https://www.dongqiudi.com/player/50146726.html');
+person.get('/getPersonInfo', async (ctx) => {
+	const res = await axios.get(`${personUrl}/${ctx.query.id}.html`);
 	const $ = cheerio.load(res.data);
-	let basicInfo = getBasicData($('.info-left'));
+	let basicInfo = getBasicData($('.player-info'));
 	let chartInfo = getChartInfo(Array.from($('.box_chart .item')))
-	console.log(basicInfo)
-	console.log(chartInfo)
 	ctx.body = {
 		code: 200,
-		body: {
+		data: {
 			basicInfo,
 			chartInfo
 		}
@@ -57,24 +33,26 @@ function getBasicInfo(lis) {
 }
 
 function getChartInfo(charts) {
-	let map = new Map();
+	let arr = [];
 	charts.forEach(chart => {
-		let [k, v] = [$$(chart).text().match(/(.+?)(\d+)/)[1], $$(chart).text().match(/(.+?)(\d+)/)[2]];
-		map.set(k, v);
+		let [label, value] = [$$(chart).text().match(/(.+?)(\d+)/)[1], $$(chart).text().match(/(.+?)(\d+)/)[2]];
+		arr.push({label, value})
 	})
-	return Array.from(map);
+	return arr;
 }
 
 function getBasicData(dom) { //基础信息
 	let [
 		name,
 		enName,
+		personImgUrl,
 		countryImgUrl,
 		clubImgUrl,
 		otherInfo,
 	] = [
 		dom.find('.china-name').text(),
 		dom.find('.en-name').text(),
+		dom.find('.player-photo').attr('src'),
 		dom.find('.nation').attr('src'),
 		dom.find('.team-icon').attr('src'),
 		getBasicInfo(Array.from(dom.find('ul li'))),
@@ -82,10 +60,11 @@ function getBasicData(dom) { //基础信息
 	return {
 		name,
 		enName,
+		personImgUrl,
 		countryImgUrl,
 		clubImgUrl,
 		otherInfo
 	}
 }
 
-module.exports = api;
+module.exports = person;
