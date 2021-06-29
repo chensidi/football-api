@@ -11,12 +11,14 @@ person.get('/getPersonInfo', async (ctx) => {
 	const res = await axios.get(`${personUrl}/${ctx.query.id}.html`);
 	const $ = cheerio.load(res.data);
 	let basicInfo = getBasicData($('.player-info'));
-	let chartInfo = getChartInfo(Array.from($('.box_chart .item')))
+	let chartInfo = getChartInfo(Array.from($('.box_chart .item')));
+	let desc = getDescInfo(Array.from($('.des .list')))
 	ctx.body = {
 		code: 200,
 		data: {
 			basicInfo,
-			chartInfo
+			chartInfo,
+			desc
 		}
 	}
 })
@@ -64,6 +66,23 @@ function getBasicData(dom) { //基础信息
 		countryImgUrl,
 		clubImgUrl,
 		otherInfo
+	}
+}
+
+function getDescInfo(lists) {
+	let $2 = $$(lists[0]);
+	let useFootImg = 'https://www.dongqiudi.com' + $2('img').attr('src');
+	$2 = $$(lists[1]);
+	let countryKnown = $2('.rank_f').length;
+	$2 = $$(lists[2]);
+	let uselessFoot = $2('.rank_f').length;
+	$2 = $$(lists[3]);
+	let showSkill = $2('.rank_f').length;
+	return {
+		useFootImg,
+		countryKnown,
+		uselessFoot,
+		showSkill
 	}
 }
 
