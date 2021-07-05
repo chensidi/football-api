@@ -12,7 +12,8 @@ person.get('/getPersonInfo', async (ctx) => {
 	const $ = cheerio.load(res.data);
 	let basicInfo = getBasicData($('.player-info'));
 	let chartInfo = getChartInfo(Array.from($('.box_chart .item')));
-	let desc = getDescInfo(Array.from($('.des .list')))
+	let desc = getDescInfo(Array.from($('.des .list')));
+	basicInfo.average = $('.average b').text()
 	ctx.body = {
 		code: 200,
 		data: {
@@ -29,7 +30,7 @@ const infoAttr = [
 function getBasicInfo(lis) {
 	let obj = {};
 	lis.forEach((li, i) => {
-		obj[infoAttr[i]] = $$(li).text().match(/：(.+)/)[1];
+		obj[infoAttr[i]] = $$(li).text().match(/：(.+)/)?.[1];
 	})
 	return obj;
 }
