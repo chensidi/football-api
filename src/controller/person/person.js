@@ -13,13 +13,16 @@ person.get('/getPersonInfo', async (ctx) => {
 	let basicInfo = getBasicData($('.player-info'));
 	let chartInfo = getChartInfo(Array.from($('.box_chart .item')));
 	let desc = getDescInfo(Array.from($('.des .list')));
-	basicInfo.average = $('.average b').text()
+	basicInfo.average = $('.average b').text();
+	let matchData = getMatchData(($('.total-con-wrap')));
+
 	ctx.body = {
 		code: 200,
 		data: {
 			basicInfo,
 			chartInfo,
-			desc
+			desc,
+			matchData
 		}
 	}
 })
@@ -85,6 +88,18 @@ function getDescInfo(lists) {
 		uselessFoot,
 		showSkill
 	}
+}
+
+function getMatchData(matchDom) {
+	let arr = []
+	matchDom.find('p span').each(function() {
+		arr.push($$(this).text())
+	})
+	let arr1 = [];
+	while (arr.length) {
+		arr1.push(arr.splice(0, 9));
+	}
+	return arr1;
 }
 
 module.exports = person;
