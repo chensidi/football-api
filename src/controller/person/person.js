@@ -15,6 +15,7 @@ person.get('/getPersonInfo', async (ctx) => {
 	let desc = getDescInfo(Array.from($('.des .list')));
 	basicInfo.average = $('.average b').text();
 	let matchData = getMatchData(($('.total-con-wrap')));
+	let hornorData = getHornorData($('.hornor-list .cup'), $('.hornor-list .champion'), $('.hornor-list .during-time b'))
 
 	ctx.body = {
 		code: 200,
@@ -22,7 +23,8 @@ person.get('/getPersonInfo', async (ctx) => {
 			basicInfo,
 			chartInfo,
 			desc,
-			matchData
+			matchData,
+			hornorData
 		}
 	}
 })
@@ -100,6 +102,42 @@ function getMatchData(matchDom) {
 		arr1.push(arr.splice(0, 9));
 	}
 	return arr1;
+}
+
+function getHornorData(imgs, names, bs) { //球员荣誉数据
+	let imgArr = [];
+	imgs.each(function(i) {
+		imgArr.push(imgs[i].attribs.src);
+	})
+
+	let hornorNameArr = [], numArr = []
+	names.each(function(i) {
+		let txt = $$(names[i]).text()
+		hornorNameArr.push(txt.split('X')[0].trim());
+		numArr.push(txt.split('X')[1].trim())
+	})
+
+
+	let allYearsArr = [], yearArr = [];
+	bs.each(function(i) {
+		allYearsArr.push($$(this).text())
+	})
+	
+	numArr.map(item => {
+		yearArr.push(allYearsArr.splice(0, item));
+	})
+
+	// console.log(yearArr);
+	let objArr = [];
+	yearArr.map((item, i) => {
+		objArr.push({
+			name: hornorNameArr[i],
+			img: imgArr[i],
+			years: item
+		})
+	})
+
+	return objArr;
 }
 
 module.exports = person;
