@@ -16,6 +16,9 @@ person.get('/getPersonInfo', async (ctx) => {
 	basicInfo.average = $('.average b').text();
 	let matchData = getMatchData(($('.total-con-wrap')));
 	let hornorData = getHornorData($('.hornor-list .cup'), $('.hornor-list .champion'), $('.hornor-list .during-time b'))
+	let transfer = getTransfer($('.transfer'));
+	let injured = getInjured($('.injured-item'));
+
 
 	ctx.body = {
 		code: 200,
@@ -24,7 +27,9 @@ person.get('/getPersonInfo', async (ctx) => {
 			chartInfo,
 			desc,
 			matchData,
-			hornorData
+			hornorData,
+			transfer,
+			injured
 		}
 	}
 })
@@ -122,12 +127,11 @@ function getHornorData(imgs, names, bs) { //球员荣誉数据
 	bs.each(function(i) {
 		allYearsArr.push($$(this).text())
 	})
-	
+
 	numArr.map(item => {
 		yearArr.push(allYearsArr.splice(0, item));
 	})
 
-	// console.log(yearArr);
 	let objArr = [];
 	yearArr.map((item, i) => {
 		objArr.push({
@@ -138,6 +142,43 @@ function getHornorData(imgs, names, bs) { //球员荣誉数据
 	})
 
 	return objArr;
+}
+
+
+function getTransfer(transfer) { //转会记录
+	const transferArr = [];
+	transfer.each(function(i) {
+		const item = {};
+		item.date = $$(transfer[i].children[0]).text(); //转会时间
+		item.fromImg = transfer[i].children[1].children[0].children[0].attribs.src; //转出球队logo
+		item.fromTeam = $$(transfer[i].children[1].children[0].children[1]).text(); //转出球队name
+		item.toImg = transfer[i].children[1].children[4].children[0].attribs.src; //转入球队logo
+		item.toTeam = $$(transfer[i].children[1].children[4].children[1]).text(); //转入球队name
+		item.type = transfer[i].children[3].children[0].data.trim(); //转会方式
+		//转会费
+		if (transfer[i]?.children[3]?.children[1]?.children) {
+			item.cost = transfer[i]?.children[3]?.children[1]?.children[0]?.data.replace(/（|）/g, '');
+		} else {
+			item.cost = false;
+		}
+		
+		transferArr.push(item);
+	})
+	return transferArr;
+}
+
+function getInjured(injured) { //伤病记录
+	const injuredArr = [];
+	injured.each(function(i) {
+		const item = {};
+		item.team = injured[i].children[0].children[0].data; //球队名
+		item.reason = injured[i].children[1].children[0].data; //伤病原因
+		item.date = injured[i].children[2].children[0].data; //伤病时间
+
+		injuredArr.push(item);
+	})
+	
+	return injuredArr;
 }
 
 module.exports = person;
