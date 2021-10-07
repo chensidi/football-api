@@ -9,7 +9,9 @@ const matchObj = {
     situationUrl: `https://www.dongqiudi.com/mobile/match/situation`,
 	lineupUrl: `https://www.dongqiudi.com/mobile/match/lineup`,
 	analysisUrl: `https://www.dongqiudi.com/mobile/match/analysis`,
-	highlightsUrl: `https://www.dongqiudi.com/mobile/match/highlights`
+	highlightsUrl: `https://www.dongqiudi.com/mobile/match/highlights`,
+	matchMenuPc: `https://www.dongqiudi.com/api/v2/config/match_menu?mark=gif&platform=www&version=713`,
+	matchUrlPc: 'https://www.dongqiudi.com/api/data/tab/league/new/'
 }
 
 match.post('/getMatchMenu', async ctx => { //获取比赛菜单
@@ -101,6 +103,39 @@ match.get('/getHighlights', async ctx => { //获取集锦
     const { matchId } = ctx.query;
     try {
         const res = await got(`${matchObj.highlightsUrl}/${matchId}`);
+        ctx.body = {
+			code: 200,
+			data: JSON.parse(res.body)
+		}
+    } catch (err) {
+        console.log(err);
+		ctx.body = {
+			code: -1,
+			data: err
+		}
+    }
+})
+
+match.get('/getMatchMenuPc', async ctx => { //获取PC端比赛菜单
+    try {
+        const res = await got(`${matchObj.matchMenuPc}`);
+        ctx.body = {
+			code: 200,
+			data: JSON.parse(res.body)
+		}
+    } catch (err) {
+        console.log(err);
+		ctx.body = {
+			code: -1,
+			data: err
+		}
+    }
+})
+
+match.post('/getMatchListPc', async ctx => { //获取PC端比赛列表
+    try {
+		const { startTime, type } = ctx.request.body;
+        const res = await got(`${matchObj.matchUrlPc}/${type}?start=${startTime}`);
         ctx.body = {
 			code: 200,
 			data: JSON.parse(res.body)

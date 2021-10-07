@@ -4,7 +4,9 @@ const config = require('./config');
 
 const video = new Router();
 const videoObj = {
-    listUrl: 'https://www.dongqiudi.com/api/app/tabs/web/'
+    listUrl: 'https://www.dongqiudi.com/api/app/tabs/web/',
+    pcTabs: 'https://www.dongqiudi.com/api/v3/archive/app/tabs/getlists',
+    pcListUrl: 'https://www.dongqiudi.com/api/v3/archive/app/tabs/getlists?id=233&platform=android&version=204'
 }
 
 video.post('/getVideoList', async ctx => { //联赛视频列表
@@ -17,6 +19,22 @@ video.post('/getVideoList', async ctx => { //联赛视频列表
             url = `${url}?after=${after}`;
         }
         const res = await got(url);
+        ctx.body = {
+            code: 200,
+            data: JSON.parse(res.body)
+        }
+    } catch(err) {
+		console.log(err);
+		ctx.body = {
+			code: -1,
+			data: err
+		}
+	}
+})
+
+video.get('/getHotVideo', async ctx => { //首页推荐视频列表
+    try {
+        const res = await got(videoObj.pcListUrl);
         ctx.body = {
             code: 200,
             data: JSON.parse(res.body)
